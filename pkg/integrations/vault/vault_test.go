@@ -160,7 +160,9 @@ func Test__Vault__Configuration(t *testing.T) {
 
 func Test__Vault__Components(t *testing.T) {
 	v := &Vault{}
-	assert.Empty(t, v.Components())
+	components := v.Components()
+	require.Len(t, components, 1)
+	assert.Equal(t, "vault.getSecret", components[0].Name())
 }
 
 func Test__Vault__Triggers(t *testing.T) {
