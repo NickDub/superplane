@@ -43,10 +43,15 @@ type SecretMetadata struct {
 
 // MetadataResponse represents the response from reading secret metadata
 type MetadataResponse struct {
-	CurrentVersion int            `json:"current_version"`
-	UpdatedTime    string         `json:"updated_time"`
-	CreatedTime    string         `json:"created_time"`
-	Versions       map[string]any `json:"versions"`
+	CASRequired        bool           `json:"cas_required"`
+	CreatedTime        string         `json:"created_time"`
+	CurrentVersion     int            `json:"current_version"`
+	CustomMetadata     map[string]any `json:"custom_metadata"`
+	DeleteVersionAfter string         `json:"delete_version_after"`
+	MaxVersions        int            `json:"max_versions"`
+	OldestVersion      int            `json:"oldest_version"`
+	UpdatedTime        string         `json:"updated_time"`
+	Versions           map[string]any `json:"versions"`
 }
 
 // vaultResponse wraps Vault API responses that have a data field

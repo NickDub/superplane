@@ -167,7 +167,9 @@ func Test__Vault__Components(t *testing.T) {
 
 func Test__Vault__Triggers(t *testing.T) {
 	v := &Vault{}
-	assert.Empty(t, v.Triggers())
+	triggers := v.Triggers()
+	require.Len(t, triggers, 1)
+	assert.Equal(t, "vault.onSecretChange", triggers[0].Name())
 }
 
 func Test__Vault__Actions(t *testing.T) {
