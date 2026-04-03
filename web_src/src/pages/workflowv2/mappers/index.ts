@@ -230,6 +230,11 @@ import {
   triggerRenderers as elasticTriggerRenderers,
   eventStateRegistry as elasticEventStateRegistry,
 } from "./elastic/index";
+import {
+  componentMappers as vaultComponentMappers,
+  triggerRenderers as vaultTriggerRenderers,
+  eventStateRegistry as vaultEventStateRegistry,
+} from "./vault/index";
 
 import { filterMapper, FILTER_STATE_REGISTRY } from "./filter";
 import { sshMapper, SSH_STATE_REGISTRY } from "./ssh";
@@ -312,6 +317,7 @@ const appMappers: Record<string, Record<string, ComponentBaseMapper>> = {
   harness: harnessComponentMappers,
   servicenow: servicenowComponentMappers,
   elastic: elasticComponentMappers,
+  vault: vaultComponentMappers,
 };
 
 const appTriggerRenderers: Record<string, Record<string, TriggerRenderer>> = {
@@ -356,6 +362,7 @@ const appTriggerRenderers: Record<string, Record<string, TriggerRenderer>> = {
   harness: harnessTriggerRenderers,
   servicenow: servicenowTriggerRenderers,
   elastic: elasticTriggerRenderers,
+  vault: vaultTriggerRenderers,
 };
 
 const appEventStateRegistries: Record<string, Record<string, EventStateRegistry>> = {
@@ -399,6 +406,7 @@ const appEventStateRegistries: Record<string, Record<string, EventStateRegistry>
   harness: harnessEventStateRegistry,
   servicenow: servicenowEventStateRegistry,
   elastic: elasticEventStateRegistry,
+  vault: vaultEventStateRegistry,
 };
 
 const eventStateRegistries: Record<string, EventStateRegistry> = {
