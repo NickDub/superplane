@@ -140,7 +140,9 @@ func (v *Vault) Configuration() []configuration.Field {
 }
 
 func (v *Vault) Components() []core.Component {
-	return []core.Component{}
+	return []core.Component{
+		&GetSecret{},
+	}
 }
 
 func (v *Vault) Triggers() []core.Trigger {
