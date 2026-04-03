@@ -146,7 +146,9 @@ func (v *Vault) Components() []core.Component {
 }
 
 func (v *Vault) Triggers() []core.Trigger {
-	return []core.Trigger{}
+	return []core.Trigger{
+		&OnSecretChange{},
+	}
 }
 
 func (v *Vault) Actions() []core.Action {
