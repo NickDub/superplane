@@ -552,6 +552,19 @@ export function getCustomFieldRenderer(componentName: string): CustomFieldRender
 }
 
 /**
+ * Get the payload transformer for a component type.
+ * Returns undefined if no specific transformer is registered.
+ * Used to mask sensitive data (e.g., secret values from Vault) before display.
+ */
+export function getPayloadTransformer(componentName: string): ((payload: unknown) => unknown) | undefined {
+  const mapper = findRegisteredComponentMapper(componentName);
+  if (!mapper || !mapper.transformPayload) {
+    return undefined;
+  }
+  return mapper.transformPayload.bind(mapper);
+}
+
+/**
  * Get the execution details for a component execution.
  * Returns undefined if no specific execution details function is registered.
  * Catches exceptions from mappers to prevent canvas-wide failures.

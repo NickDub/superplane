@@ -11,11 +11,6 @@ interface OnSecretChangeConfiguration {
   pollingInterval?: string;
 }
 
-interface OnSecretChangeMetadata {
-  lastKnownVersion?: number;
-  lastUpdatedTime?: string;
-}
-
 interface OnSecretChangeEventData {
   secretPath?: string;
   mountPath?: string;
@@ -62,7 +57,6 @@ export const onSecretChangeTriggerRenderer: TriggerRenderer = {
 
   getTriggerProps: (context: TriggerRendererContext) => {
     const { node, definition, lastEvent } = context;
-    const metadata = node.metadata as OnSecretChangeMetadata | undefined;
     const configuration = node.configuration as OnSecretChangeConfiguration | undefined;
     const metadataItems: TriggerProps["metadata"] = [];
 
