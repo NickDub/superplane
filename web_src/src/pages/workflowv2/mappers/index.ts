@@ -231,6 +231,11 @@ import {
   triggerRenderers as elasticTriggerRenderers,
   eventStateRegistry as elasticEventStateRegistry,
 } from "./elastic/index";
+import {
+  componentMappers as vaultComponentMappers,
+  triggerRenderers as vaultTriggerRenderers,
+  eventStateRegistry as vaultEventStateRegistry,
+} from "./vault/index";
 
 import { filterMapper, FILTER_STATE_REGISTRY } from "./filter";
 import { sshMapper, SSH_STATE_REGISTRY } from "./ssh";
@@ -318,6 +323,7 @@ const appMappers: Record<string, Record<string, ComponentBaseMapper>> = {
   harness: harnessComponentMappers,
   servicenow: servicenowComponentMappers,
   elastic: elasticComponentMappers,
+  vault: vaultComponentMappers,
 };
 
 const appTriggerRenderers: Record<string, Record<string, TriggerRenderer>> = {
@@ -362,6 +368,7 @@ const appTriggerRenderers: Record<string, Record<string, TriggerRenderer>> = {
   harness: harnessTriggerRenderers,
   servicenow: servicenowTriggerRenderers,
   elastic: elasticTriggerRenderers,
+  vault: vaultTriggerRenderers,
 };
 
 const appEventStateRegistries: Record<string, Record<string, EventStateRegistry>> = {
@@ -405,6 +412,7 @@ const appEventStateRegistries: Record<string, Record<string, EventStateRegistry>
   harness: harnessEventStateRegistry,
   servicenow: servicenowEventStateRegistry,
   elastic: elasticEventStateRegistry,
+  vault: vaultEventStateRegistry,
 };
 
 const componentAdditionalDataBuilders: Record<string, ComponentAdditionalDataBuilder> = {
@@ -541,6 +549,19 @@ export function getCustomFieldRenderer(componentName: string): CustomFieldRender
   const name = parts.slice(1).join(".");
   const renderer = appRenderers[name];
   return renderer ? createSafeCustomFieldRenderer(renderer, componentName) : undefined;
+}
+
+/**
+ * Get the payload transformer for a component type.
+ * Returns undefined if no specific transformer is registered.
+ * Used to mask sensitive data (e.g., secret values from Vault) before display.
+ */
+export function getPayloadTransformer(componentName: string): ((payload: unknown) => unknown) | undefined {
+  const mapper = findRegisteredComponentMapper(componentName);
+  if (!mapper || !mapper.transformPayload) {
+    return undefined;
+  }
+  return mapper.transformPayload.bind(mapper);
 }
 
 /**
