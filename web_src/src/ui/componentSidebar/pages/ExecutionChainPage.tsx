@@ -13,7 +13,7 @@ import type {
 } from "@/api-client";
 import type { EventState, EventStateMap } from "../../componentBase";
 import type { ChildExecution } from "@/ui/chainItem";
-import { getExecutionDetails } from "@/pages/workflowv2/mappers";
+import { getExecutionDetails, getPayloadTransformer } from "@/pages/workflowv2/mappers";
 import { getHeaderIconSrc } from "@/ui/componentSidebar/integrationIconMaps";
 import { analytics } from "@/lib/analytics";
 
@@ -64,6 +64,14 @@ function buildExecutionTabData(
 
     if (outputData?.length > 0) {
       payload = outputData?.[0] as Record<string, unknown>;
+    }
+  }
+
+  // Apply payload transformation if available (e.g., mask sensitive data for Vault secrets)
+  if (workflowNode?.component?.name) {
+    const transformer = getPayloadTransformer(workflowNode.component.name);
+    if (transformer) {
+      payload = transformer(payload) as Record<string, unknown>;
     }
   }
 

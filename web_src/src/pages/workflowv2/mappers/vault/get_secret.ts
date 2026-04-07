@@ -6,24 +6,15 @@ import type {
   ExecutionInfo,
   NodeInfo,
   OutputPayload,
-  StateFunction,
   SubtitleContext,
 } from "../types";
-import type {
-  ComponentBaseProps,
-  ComponentBaseSpec,
-  EventSection,
-  EventState,
-  EventStateMap,
-} from "@/ui/componentBase";
-import { DEFAULT_EVENT_STATE_MAP } from "@/ui/componentBase";
+import type { ComponentBaseProps, ComponentBaseSpec, EventSection } from "@/ui/componentBase";
 import { getBackgroundColorClass, getColorClass } from "@/lib/colors";
 import type React from "react";
 import type { MetadataItem } from "@/ui/metadataList";
 import VaultIcon from "@/assets/icons/integrations/vault.svg";
 import { renderTimeAgo } from "@/components/TimeAgo";
 import { getState, getStateMap, getTriggerRenderer } from "..";
-import type { CanvasesCanvasNodeExecution } from "@/api-client";
 import { buildActionStateRegistry } from "../utils";
 
 interface GetSecretConfiguration {
@@ -95,6 +86,10 @@ export const getSecretMapper: ComponentBaseMapper = {
 
     return "";
   },
+
+  transformPayload(payload: unknown): unknown {
+    return maskSecretPayload(payload);
+  },
 };
 
 function getSecretMetadataList(node: NodeInfo): MetadataItem[] {
@@ -153,6 +148,70 @@ function getSecretPath(node: NodeInfo): string | undefined {
   }
 
   return secretPath || undefined;
+}
+
+/**
+ * Masks sensitive values in the Vault secret payload.
+ * The payload structure is: { data: { key: value, ... }, metadata: { version, created_time } }
+ * We mask the VALUES inside `data` (the actual secrets) but keep the keys visible.
+ * The `metadata` field remains fully visible.
+ */
+function maskSecretPayload(payload: unknown): unknown {
+  if (!payload || typeof payload !== "object") {
+    return payload;
+  }
+
+  const result = { ...payload } as Record<string, unknown>;
+
+  // Mask only the values inside 'data' field (the actual secret key-value pairs)
+  // Do NOT mask 'metadata' - it contains non-sensitive info (version, timestamps)
+  if ("data" in result && result.data && typeof result.data === "object") {
+    const originalData = result.data as Record<string, unknown>;
+    const maskedData: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(originalData)) {
+      // Skip 'metadata' field - it's not sensitive
+      if (key === "metadata") {
+        maskedData[key] = value;
+      } else {
+        maskedData[key] = maskValue(value);
+      }
+    }
+    result.data = maskedData;
+  }
+
+  return result;
+}
+
+/**
+ * Recursively masks a value. Strings become "***", objects are recursively masked,
+ * arrays have each element masked.
+ */
+function maskValue(value: unknown): unknown {
+  if (value === null || value === undefined) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    return "*****";
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return "*****";
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(maskValue);
+  }
+
+  if (typeof value === "object") {
+    const maskedObj: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
+      maskedObj[key] = maskValue(val);
+    }
+    return maskedObj;
+  }
+
+  return "*****";
 }
 
 export const GET_SECRET_STATE_REGISTRY: EventStateRegistry = buildActionStateRegistry("retrieved");
