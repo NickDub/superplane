@@ -111,6 +111,13 @@ export interface ComponentBaseMapper {
   props(context: ComponentBaseContext): ComponentBaseProps;
   subtitle(context: SubtitleContext): string | React.ReactNode;
   getExecutionDetails(context: ExecutionDetailsContext): Record<string, any>;
+  /**
+   * Optional method to transform the payload before displaying it in the UI.
+   * Useful for masking sensitive data (e.g., secret values from Vault).
+   * @param payload The raw payload data
+   * @returns The transformed payload for display
+   */
+  transformPayload?(payload: unknown): unknown;
 }
 
 export type ComponentBaseContext = {
