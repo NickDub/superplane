@@ -17,7 +17,7 @@ import type { LogEntry, LogRunItem } from "@/ui/CanvasLogSidebar";
 import type { TabData } from "@/ui/componentSidebar/SidebarEventItem/SidebarEventItem";
 import type { SidebarEvent } from "@/ui/componentSidebar/types";
 import { createElement, Fragment, type ReactNode } from "react";
-import { getComponentBaseMapper, getState, getTriggerRenderer } from "./mappers";
+import { getComponentBaseMapper, getPayloadTransformer, getState, getTriggerRenderer } from "./mappers";
 import type { ComponentDefinition, EventInfo, ExecutionInfo, NodeInfo, QueueItemInfo, User } from "./mappers/types";
 
 export function generateNodeId(blockName: string, nodeName: string): string {
@@ -1206,6 +1206,14 @@ export function buildTabData(
 
     if (outputData?.length > 0) {
       payload = outputData?.[0] as Record<string, unknown>;
+    }
+  }
+
+  // Apply payload transformation if available (e.g., mask sensitive data for Vault secrets)
+  if (node.component?.name) {
+    const transformer = getPayloadTransformer(node.component.name);
+    if (transformer) {
+      payload = transformer(payload) as Record<string, unknown>;
     }
   }
 
