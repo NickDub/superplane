@@ -59,6 +59,7 @@ import launchdarklyIcon from "@/assets/icons/integrations/launchdarkly.svg";
 import teamsIcon from "@/assets/icons/integrations/teams.svg";
 import ociIcon from "@/assets/icons/integrations/oci.svg";
 import graphqlIcon from "@/assets/icons/graphql.svg";
+import vaultIcon from "@/assets/icons/integrations/vault.svg";
 
 /** Integration type name (e.g. "github") → logo src. Used for Settings tab and header. */
 export const INTEGRATION_APP_LOGO_MAP: Record<string, string> = {
@@ -109,6 +110,7 @@ export const INTEGRATION_APP_LOGO_MAP: Record<string, string> = {
   elastic: elasticIcon,
   oci: ociIcon,
   graphql: graphqlIcon,
+  vault: vaultIcon,
 };
 
 /** Block name first part (e.g. "github") or compound (e.g. aws.lambda) → logo src for header. */
@@ -177,6 +179,7 @@ export const APP_LOGO_MAP: Record<string, string | Record<string, string>> = {
   },
   elastic: elasticIcon,
   oci: ociIcon,
+  vault: vaultIcon,
 };
 
 /**
